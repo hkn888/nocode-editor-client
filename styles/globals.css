@@ -1,4 +1,14 @@
-:root {
+@import "tailwindcss";
+
+/* 確保 body 撐開且沒有邊距，顏色才會長滿 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -39,4 +49,4 @@ a {
   html {
     color-scheme: dark;
   }
-}
+} */
