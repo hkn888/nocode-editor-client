@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Sidebar from "@/ui-library/components/editor/sidebar";
+import Panel from "@/ui-library/components/editor/panel";
+import Canvas from "@/ui-library/components/editor/canvas";
 
 export default function Editor() {
   const [component, setComponent] = useState([]);
@@ -21,54 +24,16 @@ export default function Editor() {
     <div className="flex flex-col min-h-screen">
       <div className="w-full bg-blue-500">Header的位置</div>
       <div className="flex flex-1">
-        <div className="w-16 bg-gray-200 border-r border-gray-500">
-          sidebar
-          <button
-            className="w-8 h-8 bg-blue-300"
-            onClick={() => addComponent()}
-          >
-            T
-          </button>
-        </div>
+        <Sidebar onAdd={addComponent} />
         <div className="flex-grow flex flex-col">
           <div className="h-8 bg-yellow-200">canvas control</div>
-          <div
-            className="bg-gray-100 flex-grow"
-            onClick={() => setSelectedId(null)}
-          >
-            canvas
-            {component.map((c) => {
-              const isSelected = selectedId === c.id;
-
-              return (
-                <div
-                  key={c.id}
-                  id={c.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedId(c.id);
-                  }}
-                  isSelected={selectedId === c.id}
-                  className={`cursor-pointer ${
-                    isSelected
-                      ? "ring-2 ring-blue-300 border-blue-500"
-                      : "border border-transparent"
-                  }`}
-                >
-                  <p
-                    style={{
-                      backgroundColor: c.props.backgroundColor,
-                      color: c.props.color,
-                    }}
-                  >
-                    {c.props.text}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+          <Canvas
+            elements={component}
+            selectedId={selectedId}
+            setId={setSelectedId}
+          />
         </div>
-        <div className="w-16 bg-gray-200 border-l border-gray-500">panel</div>
+        <Panel />
       </div>
     </div>
   );
