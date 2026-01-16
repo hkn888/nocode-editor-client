@@ -14,10 +14,27 @@ export default function Editor() {
       props: {
         color: "#ffffff",
         backgroundColor: "#000000",
-        text: "預設文字",
+        text: `預設文字 元件${component.length + 1}`,
       },
     };
     setComponent([...component, newComp]);
+  };
+
+  const switchComponent = (index, direction) => {
+    const newItem = [...component];
+    const lastComponent = component.length - 1;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (index === 0 && direction === "up") {
+      return;
+    }
+    if (index === lastComponent && direction === "down") {
+      return;
+    }
+
+    newItem[index] = component[targetIndex];
+    newItem[targetIndex] = component[index];
+
+    setComponent(newItem);
   };
 
   return (
@@ -31,6 +48,7 @@ export default function Editor() {
             elements={component}
             selectedId={selectedId}
             setId={setSelectedId}
+            switchPosition={switchComponent}
           />
         </div>
         <Panel />

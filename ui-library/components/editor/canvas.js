@@ -1,8 +1,13 @@
-export default function Canvas({ elements, selectedId, setId }) {
+export default function Canvas({
+  elements,
+  selectedId,
+  setId,
+  switchPosition,
+}) {
   return (
     <div className="bg-gray-100 flex-grow" onClick={() => setId(null)}>
       canvas
-      {elements.map((c) => {
+      {elements.map((c, index) => {
         const isSelected = selectedId === c.id;
 
         return (
@@ -13,8 +18,7 @@ export default function Canvas({ elements, selectedId, setId }) {
               e.stopPropagation();
               setId(c.id);
             }}
-            isSelected={selectedId === c.id}
-            className={`cursor-pointer ${
+            className={`cursor-pointer flex ${
               isSelected
                 ? "ring-2 ring-blue-300 border-blue-500"
                 : "border border-transparent"
@@ -25,9 +29,28 @@ export default function Canvas({ elements, selectedId, setId }) {
                 backgroundColor: c.props.backgroundColor,
                 color: c.props.color,
               }}
+              className="flex-grow"
             >
               {c.props.text}
             </p>
+            <button
+              className="w-8 h-8 bg-gray-200 border border-gray-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                switchPosition(index, "up");
+              }}
+            >
+              ↑
+            </button>
+            <button
+              className="w-8 h-8 bg-gray-200 border border-gray-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                switchPosition(index, "down");
+              }}
+            >
+              ↓
+            </button>
           </div>
         );
       })}
