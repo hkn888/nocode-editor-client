@@ -32,7 +32,10 @@ export default function Editor() {
         </div>
         <div className="flex-grow flex flex-col">
           <div className="h-8 bg-yellow-200">canvas control</div>
-          <div className="bg-gray-100 flex-grow">
+          <div
+            className="bg-gray-100 flex-grow"
+            onClick={() => setSelectedId(null)}
+          >
             canvas
             {component.map((c) => {
               const isSelected = selectedId === c.id;
@@ -41,7 +44,10 @@ export default function Editor() {
                 <div
                   key={c.id}
                   id={c.id}
-                  onClick={() => setSelectedId(c.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedId(c.id);
+                  }}
                   isSelected={selectedId === c.id}
                   className={`cursor-pointer ${
                     isSelected
