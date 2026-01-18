@@ -1,9 +1,17 @@
-export default function Canvas({
-  elements,
-  selectedId,
-  setId,
-  switchPosition,
-}) {
+import { setSelectedId, switchElement } from "@/src/store/editorSlice";
+
+import { useSelector, useDispatch } from "react-redux";
+
+export default function Canvas() {
+  const dispatch = useDispatch();
+
+  const elements = useSelector((state) => state.editor.elements);
+  const selectedId = useSelector((state) => state.editor.selectedId);
+  const setId = (id) => dispatch(setSelectedId(id));
+  const switchPosition = (index, direction) => {
+    dispatch(switchElement({ index, direction }));
+  };
+
   return (
     <div className="bg-gray-100 flex-grow" onClick={() => setId(null)}>
       canvas
