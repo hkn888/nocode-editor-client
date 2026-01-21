@@ -28,8 +28,16 @@ const editorSlice = createSlice({
       components[index] = components[targetIndex];
       components[targetIndex] = temp;
     },
+    updateElement: (state, action) => {
+      const { id, propKey, propValue } = action.payload;
+      const targetElement = state.elements.find((element) => element.id === id);
+      if (targetElement) {
+        targetElement.props[propKey] = propValue;
+      }
+    },
   },
 });
 
-export const { addElement, setSelectedId, switchElement } = editorSlice.actions;
+export const { addElement, setSelectedId, switchElement, updateElement } =
+  editorSlice.actions;
 export default editorSlice.reducer;
