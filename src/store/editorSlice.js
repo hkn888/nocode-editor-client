@@ -35,9 +35,35 @@ const editorSlice = createSlice({
         targetElement.props[propKey] = propValue;
       }
     },
+    deleteElement: (state, action) => {
+      const targetId = action.payload;
+      if (targetId) {
+        state.elements = state.elements.filter(
+          (element) => element.id !== targetId
+        );
+        state.selectedId = null;
+      }
+    },
+    copyElement: (state, action) => {
+      const targetId = action.payload;
+      if (targetId) {
+        const targetElement = state.elements.find(
+          (element) => element.id === targetId
+        );
+        const deepCopy = JSON.parse(JSON.stringify(targetElement));
+        deepCopy.id = crypto.randomUUID ? crypto.randomUUID() : Date.now();
+        state.elements.push(deepCopy);
+      }
+    },
   },
 });
 
-export const { addElement, setSelectedId, switchElement, updateElement } =
-  editorSlice.actions;
+export const {
+  addElement,
+  setSelectedId,
+  switchElement,
+  updateElement,
+  deleteElement,
+  copyElement,
+} = editorSlice.actions;
 export default editorSlice.reducer;

@@ -1,4 +1,9 @@
-import { setSelectedId, switchElement } from "@/src/store/editorSlice";
+import {
+  deleteElement,
+  setSelectedId,
+  switchElement,
+  copyElement,
+} from "@/src/store/editorSlice";
 
 import { useSelector, useDispatch } from "react-redux";
 
@@ -11,7 +16,12 @@ export default function Canvas() {
   const switchPosition = (index, direction) => {
     dispatch(switchElement({ index, direction }));
   };
-
+  const deleteComponent = (id) => {
+    dispatch(deleteElement(id));
+  };
+  const handleCopy = (id) => {
+    dispatch(copyElement(id));
+  };
   return (
     <div className="bg-gray-100 flex-grow" onClick={() => setId(null)}>
       canvas
@@ -41,6 +51,28 @@ export default function Canvas() {
             >
               {c.props.text}
             </p>
+            {isSelected && (
+              <>
+                <button
+                  className="w-8 h-8 bg-gray-200 border border-gray-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteComponent(selectedId);
+                  }}
+                >
+                  x
+                </button>
+                <button
+                  className="w-8 h-8 bg-gray-200 border border-gray-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy(selectedId);
+                  }}
+                >
+                  c
+                </button>
+              </>
+            )}
             <button
               className="w-8 h-8 bg-gray-200 border border-gray-500"
               onClick={(e) => {
