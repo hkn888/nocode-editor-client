@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@source "../../src";
+@source "../../app";
+
 /* 確保 body 撐開且沒有邊距，顏色才會長滿 */
 html,
 body {
