@@ -42,15 +42,27 @@ export default function Canvas() {
                 : "border border-transparent"
             }`}
           >
-            <p
-              style={{
-                backgroundColor: c.props.backgroundColor,
-                color: c.props.color,
-              }}
-              className="flex-grow"
-            >
-              {c.props.text}
-            </p>
+            {c.type === "paragraph" ? (
+              <p
+                style={{
+                  backgroundColor: c.props.backgroundColor,
+                  color: c.props.color,
+                }}
+                className="flex-grow"
+              >
+                {c.props.text}
+              </p>
+            ) : (
+              <img
+                src={c.props.src}
+                style={{
+                  aspectRatio: c.props.aspectRatio,
+                  objectFit: c.props.objectFit,
+                  opacity: 1,
+                }}
+              />
+            )}
+
             {isSelected && (
               <>
                 <button
