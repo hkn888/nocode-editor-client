@@ -1,6 +1,6 @@
-import Sidebar from "@/src/components/editor/sidebar";
-import Panel from "@/src/components/editor/panel";
-import Canvas from "@/src/components/editor/canvas";
+import Sidebar from "@/src/editor/sidebar";
+import Panel from "@/src/editor/panel";
+import Canvas from "@/src/editor/canvas";
 import { useKeyboardActions } from "@/src/hooks/useKeyboardActions";
 
 export default function Editor() {
