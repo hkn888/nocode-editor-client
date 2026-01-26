@@ -26,6 +26,7 @@ export default function Canvas() {
     <div className="bg-gray-100 flex-grow" onClick={() => setId(null)}>
       canvas
       {elements.map((c, index) => {
+        console.log(`Element ${c.id} props:`, c.props);
         const isSelected = selectedId === c.id;
 
         return (
@@ -58,7 +59,7 @@ export default function Canvas() {
                 style={{
                   aspectRatio: c.props.aspectRatio,
                   objectFit: c.props.objectFit,
-                  opacity: 1,
+                  opacity: c.props.opacity,
                 }}
               />
             )}

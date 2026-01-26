@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import Fields from "./fields";
+import Fields from "../fields/fields";
 
 const paragraphFields = [
   { key: "color", label: "文字顏色", type: "input" },
@@ -18,7 +18,7 @@ const imageFields = [
   {
     key: "aspectRatio",
     label: "比例",
-    type: "composite-input",
+    type: "compositeInput",
     options: ["ratioW", "ratioH"],
     span: " : ",
   },
@@ -42,7 +42,7 @@ export default function Panel() {
         ? paragraphFields.map((f) => (
             <Fields
               key={`${selectedId}-${f.key}`}
-              f={f}
+              fieldType={f}
               targetElement={targetElement}
               dispatch={dispatch}
               selectedId={selectedId}
@@ -51,7 +51,7 @@ export default function Panel() {
         : imageFields.map((f) => (
             <Fields
               key={`${selectedId}-${f.key}`}
-              f={f}
+              fieldType={f}
               targetElement={targetElement}
               dispatch={dispatch}
               selectedId={selectedId}
