@@ -5,6 +5,8 @@ import {
   copyElement,
 } from "@/src/store/editorSlice";
 
+import ElementWrapper from "@/src/components/ElementWrapper";
+
 import { CANVAS_ELEMENTS } from "./canvasLibrary";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -34,62 +36,18 @@ export default function Canvas() {
           return <div key={c.id}>未知元件類型: {c.type}</div>;
         }
         return (
-          <div
+          <ElementWrapper
             key={c.id}
             id={c.id}
-            onClick={(e) => {
-              e.stopPropagation();
-              setId(c.id);
-            }}
-            className={`cursor-pointer flex ${
-              isSelected
-                ? "ring-2 ring-blue-300 border-blue-500"
-                : "border border-transparent"
-            }`}
+            isSelected={isSelected}
+            handleSelect={() => setId(c.id)}
+            handleDelete={() => deleteComponent(selectedId)}
+            handleCopy={() => handleCopy(selectedId)}
+            handleMoveUp={() => switchPosition(index, "up")}
+            handleMoveDown={() => switchPosition(index, "down")}
           >
             <RenderComponent c={c} />
-
-            {isSelected && (
-              <>
-                <button
-                  className="w-8 h-8 bg-gray-200 border border-gray-500"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteComponent(selectedId);
-                  }}
-                >
-                  x
-                </button>
-                <button
-                  className="w-8 h-8 bg-gray-200 border border-gray-500"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy(selectedId);
-                  }}
-                >
-                  c
-                </button>
-              </>
-            )}
-            <button
-              className="w-8 h-8 bg-gray-200 border border-gray-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                switchPosition(index, "up");
-              }}
-            >
-              ↑
-            </button>
-            <button
-              className="w-8 h-8 bg-gray-200 border border-gray-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                switchPosition(index, "down");
-              }}
-            >
-              ↓
-            </button>
-          </div>
+          </ElementWrapper>
         );
       })}
     </div>
