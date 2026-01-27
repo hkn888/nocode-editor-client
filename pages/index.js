@@ -1,4 +1,4 @@
-import Sidebar from "@/src/editor/sidebar";
+import Sidebar from "@/src/editor/sidebar/sidebar";
 import Panel from "@/src/editor/panel";
 import Canvas from "@/src/editor/canvas/canvas";
 import { useKeyboardActions } from "@/src/hooks/useKeyboardActions";

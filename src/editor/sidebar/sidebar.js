@@ -1,5 +1,6 @@
 import { addElement } from "@/src/store/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { createElementFromBluePrint } from "./blueprint";
 
 const componentTypes = [
   { type: "paragraph", label: "T" },
@@ -11,30 +12,11 @@ export default function Sidebar() {
 
   const elements = useSelector((state) => state.editor.elements);
   const handleAdd = (type) => {
-    const paragraph = {
-      id: crypto.randomUUID ? crypto.randomUUID() : Date.now(),
-      type: "paragraph",
-      props: {
-        color: "#ffffff",
-        backgroundColor: "#000000",
-        text: `預設文字 元件${elements.length + 1}`,
-      },
-    };
-    const image = {
-      id: crypto.randomUUID ? crypto.randomUUID() : Date.now(),
-      type: "image",
-      props: {
-        src: "https://picsum.photos/id/237/200/300",
-        objectFit: "cover",
-        aspectRatio: "16 / 9",
-        opacity: "1",
-      },
-    };
-    if (type === "paragraph") {
-      dispatch(addElement(paragraph));
-    }
-    if (type === "image") {
-      dispatch(addElement(image));
+    const elementToAdd = createElementFromBluePrint(type, elements.length);
+    if (elementToAdd) {
+      dispatch(addElement(elementToAdd));
+    } else {
+      console.warn(`[Sidebar] 無法建立元件，因為找不到類型：${type}`);
     }
   };
   return (
