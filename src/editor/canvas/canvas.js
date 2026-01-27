@@ -5,6 +5,7 @@ import {
   copyElement,
 } from "@/src/store/editorSlice";
 
+import { CANVAS_ELEMENTS } from "./canvasLibrary";
 import { useSelector, useDispatch } from "react-redux";
 
 export default function Canvas() {
@@ -22,13 +23,16 @@ export default function Canvas() {
   const handleCopy = (id) => {
     dispatch(copyElement(id));
   };
+
   return (
     <div className="bg-gray-100 flex-grow" onClick={() => setId(null)}>
       canvas
       {elements.map((c, index) => {
-        console.log(`Element ${c.id} props:`, c.props);
+        const RenderComponent = CANVAS_ELEMENTS[c.type];
         const isSelected = selectedId === c.id;
-
+        if (!RenderComponent) {
+          return <div key={c.id}>未知元件類型: {c.type}</div>;
+        }
         return (
           <div
             key={c.id}
@@ -43,26 +47,7 @@ export default function Canvas() {
                 : "border border-transparent"
             }`}
           >
-            {c.type === "paragraph" ? (
-              <p
-                style={{
-                  backgroundColor: c.props.backgroundColor,
-                  color: c.props.color,
-                }}
-                className="flex-grow"
-              >
-                {c.props.text}
-              </p>
-            ) : (
-              <img
-                src={c.props.src}
-                style={{
-                  aspectRatio: c.props.aspectRatio,
-                  objectFit: c.props.objectFit,
-                  opacity: c.props.opacity,
-                }}
-              />
-            )}
+            <RenderComponent c={c} />
 
             {isSelected && (
               <>
