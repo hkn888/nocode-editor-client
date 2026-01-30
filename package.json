@@ -9,12 +9,19 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
+    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "^3.2.11",
     "@reduxjs/toolkit": "^2.11.2",
+    "@tailwindcss/postcss": "^4.1.18",
+    "autoprefixer": "^10.4.23",
     "next": "16.1.2",
+    "postcss": "^8.5.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-redux": "^9.2.0",
-    "sass": "^1.97.2"
+    "sass": "^1.97.2",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "eslint": "^9",

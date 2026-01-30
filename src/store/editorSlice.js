@@ -55,6 +55,14 @@ const editorSlice = createSlice({
         state.elements.push(deepCopy);
       }
     },
+    reorderElement: (state, action) => {
+      const { oldIndex, newIndex } = action.payload;
+      if (oldIndex === undefined || newIndex === undefined) return;
+      if (oldIndex == -1 && newIndex == -1) return;
+      const components = state.elements;
+      const [movedItem] = components.splice(oldIndex, 1);
+      components.splice(newIndex, 0, movedItem);
+    },
   },
 });
 
@@ -65,5 +73,6 @@ export const {
   updateElement,
   deleteElement,
   copyElement,
+  reorderElement,
 } = editorSlice.actions;
 export default editorSlice.reducer;
