@@ -3,6 +3,11 @@ import {
   draggable,
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import {
+  attachClosestEdge,
+  extractClosestEdge,
+} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
+
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 
 export default function ElementWrapper({
@@ -18,6 +23,7 @@ export default function ElementWrapper({
   const ref = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
+  const [closestEdge, setClosestEdge] = useState(null);
 
   const baseClass = "wf flex-shrink-0 cursor-pointer flex transition-all";
   const selectedClass = isSelected
@@ -25,10 +31,12 @@ export default function ElementWrapper({
     : "border border-transparent";
   const draggingClass = dragging ? "opacity-30" : "opacity-100";
 
-  //測試 drop target 用
-  const dragOverClass = isDraggedOver
-    ? "border-t-4 border-t-red-500 bg-red-50/50"
-    : "border-t-4 border-t-transparent";
+  const dragOverClass =
+    isDraggedOver && closestEdge === "top"
+      ? "relative before:content-[''] before:absolute before:top-[-2px] before:left-0 before:w-full before:h-[4px] before:bg-blue-500 before:z-10"
+      : isDraggedOver && closestEdge === "bottom"
+      ? "relative after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[4px] after:bg-blue-500 after:z-10"
+      : "";
 
   useEffect(() => {
     const el = ref.current;
@@ -42,10 +50,20 @@ export default function ElementWrapper({
       }),
       dropTargetForElements({
         element: el,
-        onDragEnter: () => setIsDraggedOver(true),
+        onDrag: ({ self }) => {
+          setIsDraggedOver(true);
+          setClosestEdge(extractClosestEdge(self.data));
+        },
         onDragLeave: () => setIsDraggedOver(false),
         onDrop: () => setIsDraggedOver(false),
-        getData: () => ({ id }),
+        getData: ({ input, element }) => {
+          const data = { id };
+          return attachClosestEdge(data, {
+            input,
+            element,
+            allowedEdges: ["top", "bottom"],
+          });
+        },
       })
     );
   }, []);
