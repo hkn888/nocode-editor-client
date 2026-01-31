@@ -1,6 +1,6 @@
 import { addElement } from "@/src/store/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { createElementFromBluePrint } from "./blueprint";
+import { createElementFromBluePrint } from "./blueprint/blueprint";
 
 const componentTypes = [
   { type: "paragraph", label: "T" },
