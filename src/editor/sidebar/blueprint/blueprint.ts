@@ -1,4 +1,6 @@
-export const ELEMENT_BLUEPRINTS = {
+import { EditorElement, ElementBlueprint } from "./types";
+
+export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
   paragraph: {
     type: "paragraph",
     props: {
@@ -18,14 +20,17 @@ export const ELEMENT_BLUEPRINTS = {
   },
 };
 
-export const createElementFromBluePrint = (type, index) => {
+export const createElementFromBluePrint = (type: string, index: number) => {
   const blueprint = ELEMENT_BLUEPRINTS[type];
   if (!blueprint) return null;
 
   const newElement = {
     ...blueprint,
     props: { ...blueprint.props },
-    id: crypto.randomUUID ? crypto.randomUUID() : Date.now(),
+    id:
+      typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : String(Date.now()),
   };
 
   if (type === "paragraph") {
