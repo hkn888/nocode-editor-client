@@ -6,9 +6,7 @@ import {
   reorderElement,
 } from "@/src/store/editorSlice";
 
-import ElementWrapper from "@/src/components/ElementWrapper";
-
-import { CANVAS_ELEMENTS } from "./canvasLibrary";
+import RecursiveRenderer from "./RecursiveRenderer";
 import { useSelector, useDispatch } from "react-redux";
 
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -21,18 +19,15 @@ export default function Canvas() {
   const elements = useSelector((state) => state.editor.elements);
   const selectedId = useSelector((state) => state.editor.selectedId);
   const setId = (id) => dispatch(setSelectedId(id));
-  const switchPosition = (index, direction) => {
+  const handleSwitch = (index, direction) => {
     dispatch(switchElement({ index, direction }));
   };
-  const deleteComponent = (id) => {
+  const handleDelete = (id) => {
     dispatch(deleteElement(id));
   };
   const handleCopy = (id) => {
     dispatch(copyElement(id));
   };
-  // const handleReorder = (oldIndex, newIndex) => {
-  //   dispatch(reorderElement({ oldIndex, newIndex }));
-  // };
 
   useEffect(() => {
     return monitorForElements({
@@ -70,25 +65,19 @@ export default function Canvas() {
   return (
     <div className="bg-gray-100 flex-grow" onClick={() => setId(null)}>
       canvas
-      {elements.map((c, index) => {
-        const RenderComponent = CANVAS_ELEMENTS[c.type];
-        const isSelected = selectedId === c.id;
-        if (!RenderComponent) {
-          return <div key={c.id}>未知元件類型: {c.type}</div>;
-        }
+      {elements.map((element, index) => {
         return (
-          <ElementWrapper
-            key={c.id}
-            id={c.id}
-            isSelected={isSelected}
-            handleSelect={() => setId(c.id)}
-            handleDelete={() => deleteComponent(selectedId)}
-            handleCopy={() => handleCopy(selectedId)}
-            handleMoveUp={() => switchPosition(index, "up")}
-            handleMoveDown={() => switchPosition(index, "down")}
-          >
-            <RenderComponent c={c} />
-          </ElementWrapper>
+          <RecursiveRenderer
+            element={element}
+            key={element.id}
+            index={index}
+            selectedId={selectedId}
+            handleSelect={setId}
+            handleDelete={handleDelete}
+            handleCopy={handleCopy}
+            handleMoveUp={handleSwitch}
+            handleMoveDown={handleSwitch}
+          />
         );
       })}
     </div>

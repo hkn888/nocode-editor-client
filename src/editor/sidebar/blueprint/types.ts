@@ -1,6 +1,6 @@
 export interface EditorElement {
   id: string;
-  type: "paragraph" | "image";
+  type: "paragraph" | "image" | "container";
   props: {
     color?: string;
     backgroundColor?: string;
