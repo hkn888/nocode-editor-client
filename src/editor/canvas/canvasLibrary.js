@@ -20,4 +20,16 @@ export const CANVAS_ELEMENTS = {
       }}
     />
   ),
+  container: ({ c, renderRow }) => (
+    <div
+      style={{
+        border: "1px dashed #ccc",
+        padding: "20px",
+        minHeight: "50px",
+        backgroundColor: c.props.backgroundColor,
+      }}
+    >
+      {c.children && c.children.map((child, index) => renderRow(child, index))}
+    </div>
+  ),
 };

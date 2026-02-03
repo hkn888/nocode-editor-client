@@ -5,6 +5,7 @@ import { createElementFromBluePrint } from "./blueprint/blueprint";
 const componentTypes = [
   { type: "paragraph", label: "T" },
   { type: "image", label: "i" },
+  { type: "container", label: "B" },
 ];
 
 export default function Sidebar() {

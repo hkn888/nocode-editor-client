@@ -3,7 +3,37 @@ import { createSlice } from "@reduxjs/toolkit";
 const editorSlice = createSlice({
   name: "editor",
   initialState: {
-    elements: [],
+    elements: [
+      // {
+      //   id: "p1",
+      //   type: "paragraph",
+      //   props: { text: "我是第一層的文字", color: "black" },
+      // },
+      // {
+      //   id: "c1",
+      //   type: "container",
+      //   props: { backgroundColor: "#f9f9f9" },
+      //   children: [
+      //     {
+      //       id: "p2",
+      //       type: "paragraph",
+      //       props: { text: "我是第二層（容器內）的文字", color: "blue" },
+      //     },
+      //     {
+      //       id: "c2",
+      //       type: "container",
+      //       props: { backgroundColor: "#e0f7fa" },
+      //       children: [
+      //         {
+      //           id: "p3",
+      //           type: "paragraph",
+      //           props: { text: "我是第三層（孫子）的文字", color: "red" },
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
+    ],
     selectedId: null,
   },
   reducers: {

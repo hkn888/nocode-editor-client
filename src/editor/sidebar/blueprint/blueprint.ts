@@ -18,6 +18,12 @@ export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
       opacity: "1",
     },
   },
+  container: {
+    type: "container",
+    props: {
+      backgroundColor: "#000000",
+    },
+  },
 };
 
 export const createElementFromBluePrint = (type: string, index: number) => {
