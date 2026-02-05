@@ -9,6 +9,7 @@ export interface EditorElement {
     objectFit?: string;
     aspectRatio?: string;
     opacity?: string;
+    minHeight?: string;
   };
   children?: EditorElement[];
 }

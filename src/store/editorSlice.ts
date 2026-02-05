@@ -1,41 +1,49 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { EditorElement } from "../editor/sidebar/blueprint/types";
+
+interface EditorState {
+  elements: EditorElement[];
+  selectedId: string | null;
+}
+
+const initialState: EditorState = {
+  elements: [
+    {
+      id: "p1",
+      type: "paragraph",
+      props: { text: "我是第一層的文字", color: "black" },
+    },
+    {
+      id: "c1",
+      type: "container",
+      props: { backgroundColor: "#f9f9f9" },
+      children: [
+        {
+          id: "p2",
+          type: "paragraph",
+          props: { text: "我是第二層（容器內）的文字", color: "blue" },
+        },
+        {
+          id: "c2",
+          type: "container",
+          props: { backgroundColor: "#e0f7fa", minHeight: "50px" },
+          children: [
+            {
+              id: "p3",
+              type: "paragraph",
+              props: { text: "我是第三層（孫子）的文字", color: "red" },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  selectedId: null,
+};
 
 const editorSlice = createSlice({
   name: "editor",
-  initialState: {
-    elements: [
-      // {
-      //   id: "p1",
-      //   type: "paragraph",
-      //   props: { text: "我是第一層的文字", color: "black" },
-      // },
-      // {
-      //   id: "c1",
-      //   type: "container",
-      //   props: { backgroundColor: "#f9f9f9" },
-      //   children: [
-      //     {
-      //       id: "p2",
-      //       type: "paragraph",
-      //       props: { text: "我是第二層（容器內）的文字", color: "blue" },
-      //     },
-      //     {
-      //       id: "c2",
-      //       type: "container",
-      //       props: { backgroundColor: "#e0f7fa" },
-      //       children: [
-      //         {
-      //           id: "p3",
-      //           type: "paragraph",
-      //           props: { text: "我是第三層（孫子）的文字", color: "red" },
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
-    ],
-    selectedId: null,
-  },
+  initialState,
   reducers: {
     addElement: (state, action) => {
       state.elements.push(action.payload);
@@ -60,19 +68,42 @@ const editorSlice = createSlice({
     },
     updateElement: (state, action) => {
       const { id, propKey, propValue } = action.payload;
-      const targetElement = state.elements.find((element) => element.id === id);
-      if (targetElement) {
-        targetElement.props[propKey] = propValue;
-      }
+      const performUpdate = (list) => {
+        for (const el of list) {
+          if (el.id === id) {
+            el.props[propKey] = propValue;
+            return true;
+          }
+          if (el.children && el.children.length > 0) {
+            const targetElement = performUpdate(el.children);
+            if (targetElement) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+      performUpdate(state.elements);
     },
     deleteElement: (state, action) => {
       const targetId = action.payload;
-      if (targetId) {
-        state.elements = state.elements.filter(
-          (element) => element.id !== targetId
-        );
-        state.selectedId = null;
-      }
+      const performDelete = (list: EditorElement[], targetId: string) => {
+        const result = list
+          .filter((li) => li.id !== targetId)
+          .map((li) => {
+            if (li.children && li.children.length > 0) {
+              return {
+                ...li,
+                children: performDelete(li.children, targetId),
+              };
+            }
+            return li;
+          });
+        return result;
+      };
+
+      state.elements = performDelete(state.elements, targetId);
+      state.selectedId = null;
     },
     copyElement: (state, action) => {
       const targetId = action.payload;
