@@ -107,14 +107,38 @@ const editorSlice = createSlice({
     },
     copyElement: (state, action) => {
       const targetId = action.payload;
-      if (targetId) {
-        const targetElement = state.elements.find(
-          (element) => element.id === targetId
-        );
-        const deepCopy = JSON.parse(JSON.stringify(targetElement));
-        deepCopy.id = crypto.randomUUID ? crypto.randomUUID() : Date.now();
-        state.elements.push(deepCopy);
-      }
+
+      const assignNewIds = (element) => {
+        element.id = crypto.randomUUID
+          ? crypto.randomUUID()
+          : String(Date.now() + Math.random());
+
+        if (element.children && element.children.length > 0) {
+          for (const el of element.children) {
+            assignNewIds(el);
+          }
+        }
+      };
+
+      const performCopy = (list) => {
+        for (let i = 0; i < list.length; i++) {
+          const el = list[i];
+          if (el.id === targetId) {
+            const deepCopy = JSON.parse(JSON.stringify(el));
+            assignNewIds(deepCopy);
+            list.splice(i + 1, 0, deepCopy);
+            return true;
+          }
+          if (el.children && el.children.length > 0) {
+            const found = performCopy(el.children);
+            if (found) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+      performCopy(state.elements);
     },
     reorderElement: (state, action) => {
       const { oldIndex, newIndex } = action.payload;
