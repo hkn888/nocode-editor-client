@@ -1,4 +1,4 @@
-import { EditorElement, ElementBlueprint } from "./types";
+import { ElementBlueprint } from "./types";
 
 export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
   paragraph: {
@@ -22,6 +22,7 @@ export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
     type: "container",
     props: {
       backgroundColor: "#000000",
+      minHeight: "50px",
     },
   },
 };

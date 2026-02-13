@@ -25,7 +25,7 @@ export default function Fields({
     );
   };
   const Field = FIELD_COMPONENTS[fieldType.type];
-  console.log("Current Field Type:", fieldType.type, "Found Component:", Field);
+
   return (
     <div key={fieldType.id} className="p-1">
       <label>{fieldType.label}</label>

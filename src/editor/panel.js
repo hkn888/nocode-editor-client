@@ -25,11 +25,37 @@ const imageFields = [
   { key: "opacity", label: "透明度", type: "input" },
 ];
 
+const containerFields = [
+  { key: "minHeight", label: "最小高度", type: "input" },
+];
+
+const FIELDS_MAP = {
+  paragraph: paragraphFields,
+  image: imageFields,
+  container: containerFields,
+};
+
 export default function Panel() {
   const dispatch = useDispatch();
   const selectedId = useSelector((state) => state.editor.selectedId);
   const elements = useSelector((state) => state.editor.elements);
-  const targetElement = elements.find((element) => element.id == selectedId);
+
+  const findTargetElement = (list) => {
+    for (const element of list) {
+      if (element.id == selectedId) {
+        return element;
+      }
+      if (element.children && element.children.length > 0) {
+        const found = findTargetElement(element.children);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
+  const targetElement = findTargetElement(elements);
 
   if (!targetElement) {
     return null;
@@ -38,25 +64,15 @@ export default function Panel() {
   return (
     <div className="w-32 bg-gray-200 border-l border-gray-500">
       panel
-      {selectedId && targetElement.type === "paragraph"
-        ? paragraphFields.map((f) => (
-            <Fields
-              key={`${selectedId}-${f.key}`}
-              fieldType={f}
-              targetElement={targetElement}
-              dispatch={dispatch}
-              selectedId={selectedId}
-            />
-          ))
-        : imageFields.map((f) => (
-            <Fields
-              key={`${selectedId}-${f.key}`}
-              fieldType={f}
-              targetElement={targetElement}
-              dispatch={dispatch}
-              selectedId={selectedId}
-            />
-          ))}
+      {FIELDS_MAP[targetElement.type].map((f) => (
+        <Fields
+          key={`${selectedId}-${f.key}`}
+          fieldType={f}
+          targetElement={targetElement}
+          dispatch={dispatch}
+          selectedId={selectedId}
+        />
+      ))}
     </div>
   );
 }

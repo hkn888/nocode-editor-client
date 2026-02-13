@@ -25,7 +25,7 @@ export const CANVAS_ELEMENTS = {
       style={{
         border: "1px dashed #ccc",
         padding: "20px",
-        minHeight: "50px",
+        minHeight: c.props.minHeight,
         backgroundColor: c.props.backgroundColor,
       }}
     >
