@@ -161,3 +161,35 @@ export const {
   reorderElement,
 } = editorSlice.actions;
 export default editorSlice.reducer;
+
+const extractElement = (nodes, targetId) => {
+  let foundTarget = null;
+
+  // 1. 先從當前這一層「過濾」掉目標
+  const remainingNodes = nodes
+    .filter((node) => {
+      if (node.id === targetId) {
+        foundTarget = node; // 抓到目標了
+        return false; // 從剩餘清單中移除
+      }
+      return true;
+    })
+    .map((node) => {
+      // 2. 如果沒抓到，且這個節點有小孩，就叫小孩去遞迴找
+      if (node.children && node.children.length > 0) {
+        const { list: updatedChildren, item: discoveredTarget } =
+          extractElement(node.children, targetId);
+
+        // 3. 如果小孩真的在更深層找到了目標
+        if (discoveredTarget) {
+          foundTarget = discoveredTarget;
+          // 產生「新地址」，把更新後的小孩裝回去
+          return { ...node, children: updatedChildren };
+        }
+      }
+      // 如果這條路徑沒事，就原封不動回傳舊地址
+      return node;
+    });
+
+  return { list: remainingNodes, item: foundTarget };
+};
