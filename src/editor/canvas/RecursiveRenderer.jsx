@@ -1,45 +1,46 @@
+import { useSelector } from "react-redux";
 import ElementWrapper from "@/src/components/ElementWrapper";
 import { CANVAS_ELEMENTS } from "./canvasLibrary";
 
 export default function RecursiveRenderer({
-  element,
+  id,
   index,
   selectedId,
   handleSelect,
   handleDelete,
   handleCopy,
-  handleMoveUp,
-  handleMoveDown,
 }) {
-  const renderRow = (child, childIndex) => (
+  const element = useSelector((state) => state.editor.elements[id]);
+
+  if (!element) {
+    return null;
+  }
+
+  const RenderComponent = CANVAS_ELEMENTS[element.type];
+
+  const renderRow = (childId, childIndex) => (
     <RecursiveRenderer
-      element={child}
-      key={child.id}
+      key={childId}
+      id={childId}
       index={childIndex}
       selectedId={selectedId}
       handleSelect={handleSelect}
       handleDelete={handleDelete}
       handleCopy={handleCopy}
-      handleMoveUp={handleMoveUp}
-      handleMoveDown={handleMoveDown}
     />
   );
-
-  const RenderComponent = CANVAS_ELEMENTS[element.type];
 
   const isSelected = element.id === selectedId;
 
   if (!RenderComponent) return null;
   return (
     <ElementWrapper
-      key={element.id}
-      id={element.id}
+      key={id}
+      id={id}
       isSelected={isSelected}
       handleSelect={() => handleSelect(element.id)}
       handleDelete={() => handleDelete(selectedId)}
       handleCopy={() => handleCopy(selectedId)}
-      handleMoveUp={() => handleMoveUp(index, "up")}
-      handleMoveDown={() => handleMoveDown(index, "down")}
     >
       <RenderComponent c={element} renderRow={renderRow} />
     </ElementWrapper>

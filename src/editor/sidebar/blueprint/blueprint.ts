@@ -1,4 +1,5 @@
 import { ElementBlueprint } from "./types";
+import { generateId } from "@/src/utils/uuid";
 
 export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
   paragraph: {
@@ -27,17 +28,22 @@ export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
   },
 };
 
-export const createElementFromBluePrint = (type: string, index: number) => {
+export const createElementFromBluePrint = (
+  type: keyof typeof ELEMENT_BLUEPRINTS,
+  parentId: string,
+  index: number
+) => {
   const blueprint = ELEMENT_BLUEPRINTS[type];
   if (!blueprint) return null;
 
+  const id = generateId();
+
   const newElement = {
     ...blueprint,
+    id,
+    parentId,
+    children: [],
     props: { ...blueprint.props },
-    id:
-      typeof crypto.randomUUID === "function"
-        ? crypto.randomUUID()
-        : String(Date.now()),
   };
 
   if (type === "paragraph") {

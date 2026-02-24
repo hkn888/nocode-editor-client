@@ -1,6 +1,6 @@
 export interface EditorElement {
   id: string;
-  type: "paragraph" | "image" | "container";
+  type: "paragraph" | "image" | "container" | "canvas";
   props: {
     color?: string;
     backgroundColor?: string;
@@ -11,9 +11,10 @@ export interface EditorElement {
     opacity?: string;
     minHeight?: string;
   };
-  children?: EditorElement[];
+  parentId: string | null;
+  children?: string[];
 }
 
 export type ElementBlueprint = {
-  [key: string]: Omit<EditorElement, "id">;
+  [key: string]: Omit<EditorElement, "id" | "parentId" | "children">;
 };

@@ -97,24 +97,6 @@ export default function ElementWrapper({
           >
             c
           </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveUp();
-            }}
-            className="w-8 h-8 bg-gray-200 border border-gray-500"
-          >
-            ↑
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveDown();
-            }}
-            className="w-8 h-8 bg-gray-200 border border-gray-500"
-          >
-            ↓
-          </button>
         </>
       )}
     </div>

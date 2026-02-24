@@ -11,9 +11,15 @@ const componentTypes = [
 export default function Sidebar() {
   const dispatch = useDispatch();
 
+  const rootId = useSelector((state) => state.editor.rootId);
   const elements = useSelector((state) => state.editor.elements);
+
   const handleAdd = (type) => {
-    const elementToAdd = createElementFromBluePrint(type, elements.length);
+    const elementToAdd = createElementFromBluePrint(
+      type,
+      rootId,
+      elements.length
+    );
     if (elementToAdd) {
       dispatch(addElement(elementToAdd));
     } else {
