@@ -147,12 +147,26 @@ const editorSlice = createSlice({
       }
     },
     reorderElement: (state, action) => {
-      const { oldIndex, newIndex } = action.payload;
-      if (oldIndex === undefined || newIndex === undefined) return;
-      if (oldIndex == -1 && newIndex == -1) return;
-      const components = state.elements;
-      const [movedItem] = components.splice(oldIndex, 1);
-      components.splice(newIndex, 0, movedItem);
+      const { sourceId, targetId, edge } = action.payload;
+      const sourceElement = state.elements[sourceId];
+      const targetElement = state.elements[targetId];
+      if (!sourceElement || !targetElement) return;
+
+      const oldParentId = sourceElement.parentId;
+      const newParentId = targetElement.parentId;
+
+      if (oldParentId && state.elements[oldParentId]) {
+        state.elements[oldParentId].children = state.elements[
+          oldParentId
+        ].children.filter((id) => id !== sourceId);
+      }
+
+      sourceElement.parentId = newParentId;
+
+      const newParentChildren = state.elements[newParentId].children;
+      const targetIndex = newParentChildren.indexOf(targetId);
+      const finalIndex = edge === "bottom" ? targetIndex + 1 : targetIndex;
+      newParentChildren.splice(finalIndex, 0, sourceId);
     },
   },
 });

@@ -31,38 +31,19 @@ export default function Canvas() {
     dispatch(copyElement(id));
   };
 
-  // useEffect(() => {
-  //   return monitorForElements({
-  //     onDrop({ source, location }) {
-  //       const destination = location.current.dropTargets[0];
-  //       if (!destination) return;
-  //       const sourceId = source.data.id;
-  //       const targetId = destination.data.id;
-  //       if (sourceId === targetId) return;
-
-  //       const oldIndex = elements.findIndex((el) => el.id === sourceId);
-  //       const targetIndex = elements.findIndex((el) => el.id === targetId);
-  //       const edge = extractClosestEdge(destination.data);
-  //       let newIndex = targetIndex;
-  //       if (edge === "bottom") {
-  //         newIndex = targetIndex + 1;
-  //       }
-  //       if (oldIndex === newIndex || oldIndex === newIndex - 1) {
-  //         return;
-  //       }
-  //       const finalIndex = oldIndex < newIndex ? newIndex - 1 : newIndex;
-
-  //       if (oldIndex !== -1 && newIndex !== -1) {
-  //         console.log(`測試排序: 從 ${oldIndex} 到 ${newIndex}`);
-  //         dispatch(reorderElement({ oldIndex, newIndex: finalIndex }));
-  //         console.log(
-  //           "Redux 更新後的資料順序:",
-  //           elements.map((el) => el.id)
-  //         );
-  //       }
-  //     },
-  //   });
-  // }, [elements]);
+  useEffect(() => {
+    return monitorForElements({
+      onDrop({ source, location }) {
+        const destination = location.current.dropTargets[0];
+        if (!destination) return;
+        const sourceId = source.data.id;
+        const targetId = destination.data.id;
+        const edge = extractClosestEdge(destination.data);
+        if (sourceId === targetId) return;
+        dispatch(reorderElement({ sourceId, targetId, edge }));
+      },
+    });
+  }, []);
 
   return (
     <div className="bg-gray-100 flex-grow" onClick={() => setId(null)}>

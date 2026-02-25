@@ -17,8 +17,6 @@ export default function ElementWrapper({
   handleSelect,
   handleDelete,
   handleCopy,
-  handleMoveUp,
-  handleMoveDown,
 }) {
   const ref = useRef(null);
   const [dragging, setDragging] = useState(false);

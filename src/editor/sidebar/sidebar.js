@@ -1,6 +1,8 @@
 import { addElement } from "@/src/store/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createElementFromBluePrint } from "./blueprint/blueprint";
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { useEffect } from "react";
 
 const componentTypes = [
   { type: "paragraph", label: "T" },
