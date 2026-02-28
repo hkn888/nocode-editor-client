@@ -1,43 +1,59 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { EditorElement } from "../editor/sidebar/blueprint/types";
 
+const getAllDescendantIds = (id, elements, idCollector) => {
+  idCollector.push(id);
+  const currentElement = elements[id];
+  if (!currentElement || !currentElement.children) {
+    return;
+  }
+  currentElement.children.forEach((childId) => {
+    getAllDescendantIds(childId, elements, idCollector);
+  });
+};
+
 interface EditorState {
-  elements: EditorElement[];
+  rootId: string;
+  elements: Record<string, EditorElement>;
   selectedId: string | null;
 }
 
 const initialState: EditorState = {
-  elements: [
-    {
-      id: "p1",
-      type: "paragraph",
-      props: { text: "我是第一層的文字", color: "black" },
+  rootId: "canvas-root",
+  elements: {
+    "canvas-root": {
+      id: "canvas-root",
+      type: "canvas",
+      parentId: null,
+      children: ["box-1", "text-1"],
+      props: { backgroundColor: "#ffffff" },
     },
-    {
-      id: "c1",
+
+    "box-1": {
+      id: "box-1",
       type: "container",
-      props: { backgroundColor: "#f9f9f9" },
-      children: [
-        {
-          id: "p2",
-          type: "paragraph",
-          props: { text: "我是第二層（容器內）的文字", color: "blue" },
-        },
-        {
-          id: "c2",
-          type: "container",
-          props: { backgroundColor: "#e0f7fa", minHeight: "50px" },
-          children: [
-            {
-              id: "p3",
-              type: "paragraph",
-              props: { text: "我是第三層（孫子）的文字", color: "red" },
-            },
-          ],
-        },
-      ],
+      parentId: "canvas-root",
+      children: ["pp-1"],
+      props: { minHeight: "100px" },
     },
-  ],
+
+    "text-1": {
+      id: "text-1",
+      type: "paragraph",
+      parentId: "canvas-root",
+      children: [],
+      props: { text: "這是第一層的文字" },
+    },
+
+    "pp-1": {
+      id: "pp-1",
+      type: "paragraph",
+      parentId: "box-1",
+      children: [],
+      props: { color: "#000000", text: "這是第二層的文字" },
+    },
+  },
+
   selectedId: null,
 };
 
@@ -46,107 +62,111 @@ const editorSlice = createSlice({
   initialState,
   reducers: {
     addElement: (state, action) => {
-      state.elements.push(action.payload);
+      const newElement = action.payload;
+      state.elements[newElement.id] = newElement;
+      const parentId = newElement.parentId;
+
+      if (parentId && state.elements[parentId]) {
+        state.elements[parentId].children.push(newElement.id);
+      }
     },
     setSelectedId: (state, action) => {
       state.selectedId = action.payload;
     },
-    switchElement: (state, action) => {
-      const { index, direction } = action.payload;
-      const components = state.elements;
-      const lastComponent = components.length - 1;
-      const targetIndex = direction === "up" ? index - 1 : index + 1;
-      if (index === 0 && direction === "up") {
-        return;
-      }
-      if (index === lastComponent && direction === "down") {
-        return;
-      }
-      const temp = components[index];
-      components[index] = components[targetIndex];
-      components[targetIndex] = temp;
-    },
+
     updateElement: (state, action) => {
       const { id, propKey, propValue } = action.payload;
-      const performUpdate = (list) => {
-        for (const el of list) {
-          if (el.id === id) {
-            el.props[propKey] = propValue;
-            return true;
-          }
-          if (el.children && el.children.length > 0) {
-            const targetElement = performUpdate(el.children);
-            if (targetElement) {
-              return true;
-            }
-          }
-        }
-        return false;
-      };
-      performUpdate(state.elements);
+      const elements = state.elements;
+      if (elements[id]) {
+        elements[id].props[propKey] = propValue;
+      }
     },
     deleteElement: (state, action) => {
       const targetId = action.payload;
-      const performDelete = (list: EditorElement[], targetId: string) => {
-        const result = list
-          .filter((li) => li.id !== targetId)
-          .map((li) => {
-            if (li.children && li.children.length > 0) {
-              return {
-                ...li,
-                children: performDelete(li.children, targetId),
-              };
-            }
-            return li;
-          });
-        return result;
-      };
+      const elements = state.elements;
+      const parentId = elements[targetId].parentId;
+      const idsToDelete = [];
 
-      state.elements = performDelete(state.elements, targetId);
-      state.selectedId = null;
+      getAllDescendantIds(targetId, elements, idsToDelete);
+
+      if (parentId) {
+        elements[parentId].children = elements[parentId].children.filter(
+          (id) => id !== targetId
+        );
+      }
+
+      idsToDelete.forEach((id) => {
+        delete elements[id];
+      });
+
+      if (state.selectedId === targetId) {
+        state.selectedId = null;
+      }
     },
     copyElement: (state, action) => {
       const targetId = action.payload;
+      const elements = state.elements;
+      const targetParentId = elements[targetId].parentId;
+      const idsToCopy = [];
 
-      const assignNewIds = (element) => {
-        element.id = crypto.randomUUID
-          ? crypto.randomUUID()
-          : String(Date.now() + Math.random());
+      getAllDescendantIds(targetId, elements, idsToCopy);
 
-        if (element.children && element.children.length > 0) {
-          for (const el of element.children) {
-            assignNewIds(el);
-          }
+      const idMap = {};
+      idsToCopy.forEach((oldId) => {
+        idMap[oldId] = crypto.randomUUID();
+      });
+
+      idsToCopy.forEach((oldId) => {
+        const original = elements[oldId];
+        if (!original) {
+          return;
         }
-      };
 
-      const performCopy = (list) => {
-        for (let i = 0; i < list.length; i++) {
-          const el = list[i];
-          if (el.id === targetId) {
-            const deepCopy = JSON.parse(JSON.stringify(el));
-            assignNewIds(deepCopy);
-            list.splice(i + 1, 0, deepCopy);
-            return true;
-          }
-          if (el.children && el.children.length > 0) {
-            const found = performCopy(el.children);
-            if (found) {
-              return true;
-            }
-          }
+        const deepCopy = JSON.parse(JSON.stringify(original));
+        const newId = idMap[oldId];
+        deepCopy.id = newId;
+
+        if (deepCopy.parentId && idMap[deepCopy.parentId]) {
+          deepCopy.parentId = idMap[deepCopy.parentId];
         }
-        return false;
-      };
-      performCopy(state.elements);
+
+        if (deepCopy.children && deepCopy.children.length > 0) {
+          deepCopy.children = deepCopy.children.map(
+            (oldChildId) => idMap[oldChildId]
+          );
+        }
+
+        elements[newId] = deepCopy;
+      });
+
+      if (targetParentId && elements[targetParentId]) {
+        const parent = elements[targetParentId];
+        const index = parent.children.indexOf(targetId);
+        const idCopied = idMap[targetId];
+        parent.children.splice(index + 1, 0, idCopied);
+      }
     },
     reorderElement: (state, action) => {
-      const { oldIndex, newIndex } = action.payload;
-      if (oldIndex === undefined || newIndex === undefined) return;
-      if (oldIndex == -1 && newIndex == -1) return;
-      const components = state.elements;
-      const [movedItem] = components.splice(oldIndex, 1);
-      components.splice(newIndex, 0, movedItem);
+      const { sourceId, targetId, edge } = action.payload;
+      const sourceElement = state.elements[sourceId];
+      const targetElement = state.elements[targetId];
+      if (!sourceElement || !targetElement) return;
+
+      const oldParentId = sourceElement.parentId;
+      const newParentId = targetElement.parentId;
+
+      if (oldParentId && state.elements[oldParentId]) {
+        state.elements[oldParentId].children = state.elements[
+          oldParentId
+        ].children.filter((id) => id !== sourceId);
+      }
+
+      sourceElement.parentId = newParentId;
+
+      const newParentChildren = state.elements[newParentId].children;
+      const targetIndex = newParentChildren.indexOf(targetId);
+      const finalIndex = edge === "bottom" ? targetIndex + 1 : targetIndex;
+      newParentChildren.splice(finalIndex, 0, sourceId);
     },
   },
 });
@@ -154,42 +174,9 @@ const editorSlice = createSlice({
 export const {
   addElement,
   setSelectedId,
-  switchElement,
   updateElement,
   deleteElement,
   copyElement,
   reorderElement,
 } = editorSlice.actions;
 export default editorSlice.reducer;
-
-const extractElement = (nodes, targetId) => {
-  let foundTarget = null;
-
-  // 1. 先從當前這一層「過濾」掉目標
-  const remainingNodes = nodes
-    .filter((node) => {
-      if (node.id === targetId) {
-        foundTarget = node; // 抓到目標了
-        return false; // 從剩餘清單中移除
-      }
-      return true;
-    })
-    .map((node) => {
-      // 2. 如果沒抓到，且這個節點有小孩，就叫小孩去遞迴找
-      if (node.children && node.children.length > 0) {
-        const { list: updatedChildren, item: discoveredTarget } =
-          extractElement(node.children, targetId);
-
-        // 3. 如果小孩真的在更深層找到了目標
-        if (discoveredTarget) {
-          foundTarget = discoveredTarget;
-          // 產生「新地址」，把更新後的小孩裝回去
-          return { ...node, children: updatedChildren };
-        }
-      }
-      // 如果這條路徑沒事，就原封不動回傳舊地址
-      return node;
-    });
-
-  return { list: remainingNodes, item: foundTarget };
-};

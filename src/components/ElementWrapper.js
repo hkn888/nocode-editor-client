@@ -17,8 +17,6 @@ export default function ElementWrapper({
   handleSelect,
   handleDelete,
   handleCopy,
-  handleMoveUp,
-  handleMoveDown,
 }) {
   const ref = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -96,24 +94,6 @@ export default function ElementWrapper({
             className="w-8 h-8 bg-gray-200 border border-gray-500"
           >
             c
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveUp();
-            }}
-            className="w-8 h-8 bg-gray-200 border border-gray-500"
-          >
-            ↑
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveDown();
-            }}
-            className="w-8 h-8 bg-gray-200 border border-gray-500"
-          >
-            ↓
           </button>
         </>
       )}

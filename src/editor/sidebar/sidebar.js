@@ -1,6 +1,8 @@
 import { addElement } from "@/src/store/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createElementFromBluePrint } from "./blueprint/blueprint";
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { useEffect } from "react";
 
 const componentTypes = [
   { type: "paragraph", label: "T" },
@@ -11,9 +13,15 @@ const componentTypes = [
 export default function Sidebar() {
   const dispatch = useDispatch();
 
+  const rootId = useSelector((state) => state.editor.rootId);
   const elements = useSelector((state) => state.editor.elements);
+
   const handleAdd = (type) => {
-    const elementToAdd = createElementFromBluePrint(type, elements.length);
+    const elementToAdd = createElementFromBluePrint(
+      type,
+      rootId,
+      elements.length
+    );
     if (elementToAdd) {
       dispatch(addElement(elementToAdd));
     } else {
