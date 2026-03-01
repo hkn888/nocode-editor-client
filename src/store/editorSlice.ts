@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { EditorElement } from "../editor/sidebar/blueprint/types";
+import { createElementFromBluePrint } from "../editor/sidebar/blueprint/blueprint";
 
 const getAllDescendantIds = (id, elements, idCollector) => {
   idCollector.push(id);
@@ -168,6 +169,22 @@ const editorSlice = createSlice({
       const finalIndex = edge === "bottom" ? targetIndex + 1 : targetIndex;
       newParentChildren.splice(finalIndex, 0, sourceId);
     },
+    addNewElementAt: (state, action) => {
+      const { type, targetId, edge } = action.payload;
+      const targetElement = state.elements[targetId];
+      if (!targetElement) return;
+
+      const parentId = targetElement.parentId;
+      const parent = state.elements[parentId];
+      if (parent) {
+        const elementToAdd = createElementFromBluePrint(type, parentId);
+        state.elements[elementToAdd.id] = elementToAdd;
+        const targetIndex = parent.children.indexOf(targetId);
+        const finalIndex = edge === "bottom" ? targetIndex + 1 : targetIndex;
+
+        parent.children.splice(finalIndex, 0, elementToAdd.id);
+      }
+    },
   },
 });
 
@@ -178,5 +195,6 @@ export const {
   deleteElement,
   copyElement,
   reorderElement,
+  addNewElementAt,
 } = editorSlice.actions;
 export default editorSlice.reducer;

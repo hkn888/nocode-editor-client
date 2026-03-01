@@ -3,13 +3,14 @@ import {
   setSelectedId,
   copyElement,
   reorderElement,
+  addNewElementAt,
 } from "@/src/store/editorSlice";
 
 import RecursiveRenderer from "./RecursiveRenderer";
 import { useSelector, useDispatch } from "react-redux";
 
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 
 export default function Canvas() {
@@ -31,6 +32,8 @@ export default function Canvas() {
     dispatch(copyElement(id));
   };
 
+  const canvasRef = useRef(null);
+
   useEffect(() => {
     return monitorForElements({
       onDrop({ source, location }) {
@@ -39,6 +42,9 @@ export default function Canvas() {
         const sourceId = source.data.id;
         const targetId = destination.data.id;
         const edge = extractClosestEdge(destination.data);
+        if (source.data.isSidebarItem) {
+          dispatch(addNewElementAt({ type: source.data.type, targetId, edge }));
+        }
         if (sourceId === targetId) return;
         dispatch(reorderElement({ sourceId, targetId, edge }));
       },
