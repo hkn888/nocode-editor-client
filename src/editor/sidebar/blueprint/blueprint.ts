@@ -30,8 +30,7 @@ export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
 
 export const createElementFromBluePrint = (
   type: keyof typeof ELEMENT_BLUEPRINTS,
-  parentId: string,
-  index: number
+  parentId: string
 ) => {
   const blueprint = ELEMENT_BLUEPRINTS[type];
   if (!blueprint) return null;
@@ -45,10 +44,6 @@ export const createElementFromBluePrint = (
     children: [],
     props: { ...blueprint.props },
   };
-
-  if (type === "paragraph") {
-    newElement.props.text = `預設文字 元件${index + 1}`;
-  }
 
   return newElement;
 };
