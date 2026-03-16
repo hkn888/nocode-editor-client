@@ -26,34 +26,44 @@ const initialState: EditorState = {
       id: "canvas-root",
       type: "canvas",
       parentId: null,
-      children: ["box-1", "text-1"],
+      children: [],
       props: { backgroundColor: "#ffffff" },
     },
-
-    "box-1": {
-      id: "box-1",
-      type: "container",
-      parentId: "canvas-root",
-      children: ["pp-1"],
-      props: { minHeight: "100px" },
-    },
-
-    "text-1": {
-      id: "text-1",
-      type: "paragraph",
-      parentId: "canvas-root",
-      children: [],
-      props: { text: "這是第一層的文字" },
-    },
-
-    "pp-1": {
-      id: "pp-1",
-      type: "paragraph",
-      parentId: "box-1",
-      children: [],
-      props: { color: "#000000", text: "這是第二層的文字" },
-    },
   },
+  // rootId: "canvas-root",
+  // elements: {
+  //   "canvas-root": {
+  //     id: "canvas-root",
+  //     type: "canvas",
+  //     parentId: null,
+  //     children: ["box-1", "text-1"],
+  //     props: { backgroundColor: "#ffffff" },
+  //   },
+
+  //   "box-1": {
+  //     id: "box-1",
+  //     type: "container",
+  //     parentId: "canvas-root",
+  //     children: ["pp-1"],
+  //     props: { minHeight: "100px" },
+  //   },
+
+  //   "text-1": {
+  //     id: "text-1",
+  //     type: "paragraph",
+  //     parentId: "canvas-root",
+  //     children: [],
+  //     props: { text: "這是第一層的文字" },
+  //   },
+
+  //   "pp-1": {
+  //     id: "pp-1",
+  //     type: "paragraph",
+  //     parentId: "box-1",
+  //     children: [],
+  //     props: { color: "#000000", text: "這是第二層的文字" },
+  //   },
+  // },
 
   selectedId: null,
 };
@@ -148,32 +158,40 @@ const editorSlice = createSlice({
       }
     },
     reorderElement: (state, action) => {
-      const { sourceId, targetId, edge } = action.payload;
+      const { sourceId, targetId, edge, isNesting } = action.payload;
       const sourceElement = state.elements[sourceId];
       const targetElement = state.elements[targetId];
       if (!sourceElement || !targetElement) return;
 
       const oldParentId = sourceElement.parentId;
-      const newParentId = targetElement.parentId;
-
       if (oldParentId && state.elements[oldParentId]) {
         state.elements[oldParentId].children = state.elements[
           oldParentId
         ].children.filter((id) => id !== sourceId);
       }
 
-      sourceElement.parentId = newParentId;
-
-      const newParentChildren = state.elements[newParentId].children;
-      const targetIndex = newParentChildren.indexOf(targetId);
-      const finalIndex = edge === "bottom" ? targetIndex + 1 : targetIndex;
-      newParentChildren.splice(finalIndex, 0, sourceId);
+      if (isNesting) {
+        sourceElement.parentId = targetId;
+        state.elements[targetId].children.push(sourceId);
+      } else {
+        const newParentId = targetElement.parentId;
+        sourceElement.parentId = newParentId;
+        const parentChildren = state.elements[newParentId].children;
+        const targetIndex = parentChildren.indexOf(targetId);
+        const finalIndex = edge === "bottom" ? targetIndex + 1 : targetIndex;
+        parentChildren.splice(finalIndex, 0, sourceId);
+      }
     },
     addNewElementAt: (state, action) => {
-      const { type, targetId, edge } = action.payload;
+      const { type, targetId, edge, isNesting } = action.payload;
       const targetElement = state.elements[targetId];
       if (!targetElement) return;
-
+      if (isNesting || targetElement.type === "canvas") {
+        const elementToAdd = createElementFromBluePrint(type, targetId);
+        state.elements[elementToAdd.id] = elementToAdd;
+        targetElement.children.push(elementToAdd.id);
+        return;
+      }
       const parentId = targetElement.parentId;
       const parent = state.elements[parentId];
       if (parent) {

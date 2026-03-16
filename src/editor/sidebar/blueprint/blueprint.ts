@@ -23,7 +23,7 @@ export const ELEMENT_BLUEPRINTS: ElementBlueprint = {
     type: "container",
     props: {
       backgroundColor: "#000000",
-      minHeight: "50px",
+      minHeight: "100px",
     },
   },
 };
