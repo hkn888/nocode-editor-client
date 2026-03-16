@@ -9,7 +9,6 @@ export default function Button({ label, type, onAdd }) {
     if (!el) return;
     return draggable({
       element: el,
-
       getInitialData: () => ({ type, isSidebarItem: true }),
     });
   }, []);
