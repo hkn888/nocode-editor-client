@@ -14,7 +14,7 @@ export default function Editor() {
           <div className="h-8 bg-yellow-200">canvas control</div>
           <Canvas />
         </div>
-        {/* <Panel /> */}
+        <Panel />
       </div>
     </div>
   );
