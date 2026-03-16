@@ -40,22 +40,7 @@ export default function Panel() {
   const selectedId = useSelector((state) => state.editor.selectedId);
   const elements = useSelector((state) => state.editor.elements);
 
-  const findTargetElement = (list) => {
-    for (const element of list) {
-      if (element.id == selectedId) {
-        return element;
-      }
-      if (element.children && element.children.length > 0) {
-        const found = findTargetElement(element.children);
-        if (found) {
-          return found;
-        }
-      }
-    }
-    return null;
-  };
-
-  const targetElement = findTargetElement(elements);
+  const targetElement = selectedId ? elements[selectedId] : null;
 
   if (!targetElement) {
     return null;
